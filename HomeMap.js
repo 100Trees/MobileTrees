@@ -6,7 +6,8 @@ import {
   Dimensions,
   TouchableOpacity,
   AppRegistry,
-  Platform
+  Platform,
+  Navigator
 } from 'react-native';
 
 import MapView from 'react-native-maps';
@@ -95,10 +96,6 @@ class HomeMap extends React.Component {
     this.setState({ region });
   }
 
-  jumpRandom() {
-    this.setState({ region: this.randomRegion() });
-  }
-
   animateRandom() {
     this.map.animateToRegion(this.randomRegion());
   }
@@ -109,6 +106,13 @@ class HomeMap extends React.Component {
       latitude: region.latitude + ((Math.random() - 0.5) * (region.latitudeDelta / 2)),
       longitude: region.longitude + ((Math.random() - 0.5) * (region.longitudeDelta / 2)),
     };
+  }
+
+  treePage(id) {
+    this.props.navigator.push({
+      index: 1,
+      id
+    })
   }
 
   render() {
@@ -127,7 +131,8 @@ class HomeMap extends React.Component {
               key={marker.key}
               coordinate={marker.coordinate}
               pinColor={marker.color}
-              
+              onPress={reg => this.treePage(marker.key)}
+
             />
           ))}
         </MapView>
@@ -139,7 +144,7 @@ class HomeMap extends React.Component {
         </View>
         <View style={styles.buttonContainer}>
           <TouchableOpacity
-            onPress={() => this.jumpRandom()}
+            onPress={() => this.animateRandom()}
             style={[styles.bubble, styles.button]}
           >
             <Text>Jump</Text>
