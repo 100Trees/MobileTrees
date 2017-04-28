@@ -14,6 +14,12 @@ import MapView from 'react-native-maps';
 
 const { height, width } = Dimensions.get('window');
 const spacer = width * 0.05;
+const ASPECT_RATIO = width / height;
+const LATITUDE = 37.7749;
+const LONGITUDE = -122.4914;
+const LATITUDE_DELTA = 0.0922;
+const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
+
 const URL = 'http://localhost:3000';
 
 export default class TreeProf extends Component {
@@ -25,12 +31,17 @@ export default class TreeProf extends Component {
           disp: {},
           username: '',
           tree: {},
-          region: {}
+          region: {
+            latitude: LATITUDE,
+            longitude: LONGITUDE,
+            latitudeDelta: LATITUDE_DELTA,
+            longitudeDelta: LONGITUDE_DELTA,
+          },
+          markers: [],
         };
     }
 
   componentWillMount() {
-    this.setState({})
     var t = this;
     fetch(URL + '/api/tree/info',
       {
