@@ -37,7 +37,6 @@ export default class TreeProf extends Component {
             latitudeDelta: LATITUDE_DELTA,
             longitudeDelta: LONGITUDE_DELTA,
           },
-          markers: [],
         };
     }
 
@@ -74,7 +73,23 @@ export default class TreeProf extends Component {
       {
         username: info.username,
         disp,
-        tree: info.tree
+        tree: info.tree,
+        region: {            
+          latitude: parseFloat(info.latitude),
+          longitude: parseFloat(info.longitude),
+          latitudeDelta: LATITUDE_DELTA,
+          longitudeDelta: LONGITUDE_DELTA
+        },
+        marker: {
+          coordinate: {
+            latitude: parseFloat(info.tree.latitude),
+            longitude: parseFloat(info.tree.longitude)
+          },
+          key: info.tree.id,
+          color: '#00FF00'
+        }
+      }, () => {
+        t.map.animateToRegion(t.state.region);
       });
     });
   }
@@ -95,7 +110,8 @@ export default class TreeProf extends Component {
 
   render() {
     const status = this.state.tree && this.state.tree.is_healthy ? <Text style={ styles.savedText }>SAVED</Text> :  <Text style={ styles.infectedText }>INFECTED</Text> ;
-  
+
+      
     return (
       <View
         style={styles.container}
@@ -125,7 +141,7 @@ export default class TreeProf extends Component {
           initialRegion={this.state.region}
           onRegionChange={region => this.onRegionChange(region)}
         >
-          
+          {this.state.marker && <MapView.Marker key={this.state.marker.key} coordinate={this.state.marker.coordinate} pinColor={this.state.marker.color} /> }
         </MapView>
       </View>
     );
