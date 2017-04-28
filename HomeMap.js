@@ -16,28 +16,35 @@ var _ = require('lodash');
 const { width, height } = Dimensions.get('window');
 
 const ASPECT_RATIO = width / height;
-const LATITUDE = 39.01258;
-const LONGITUDE = -77.21552;
+const LATITUDE = 37.7749;
+const LONGITUDE = -122.4914;
 const LATITUDE_DELTA = 0.0922;
 const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
 const URL = Platform.OS === 'ios' ? 'http://localhost:3000/api' : 'http://10.0.3.2:3000/api';
+const DEFAULT_REGION = 
+{
+  latitude: LATITUDE,
+  longitude: LONGITUDE,
+  latitudeDelta: LATITUDE_DELTA,
+  longitudeDelta: LONGITUDE_DELTA,
+};
 
 let id = 0;
 
 class HomeMap extends React.Component {
+  _defaultRegion() {
+    return 
+  }
+
   constructor(props) {
     super(props);
     this.state = {
-      region: {
-        latitude: LATITUDE,
-        longitude: LONGITUDE,
-        latitudeDelta: LATITUDE_DELTA,
-        longitudeDelta: LONGITUDE_DELTA,
-      },
+      region: DEFAULT_REGION,
       markers: [],
     };
   }
 
+  
   componentWillMount () {
     var t = this;
     fetch(URL + '/me')
@@ -123,7 +130,7 @@ class HomeMap extends React.Component {
           ref={ref => { this.map = ref; }}
           mapType={"standard"}
           style={styles.map}
-          initialRegion={this.state.region}
+          initialRegion={DEFAULT_REGION}
           onRegionChange={region => this.onRegionChange(region)}
         >
           {this.state.markers.map(marker => (

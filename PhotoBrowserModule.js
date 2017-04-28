@@ -34,50 +34,7 @@ export default class PhotoBrowserModule extends Component {
     const dataSource = new ListView.DataSource({
       rowHasChanged: (r1, r2) => r1 !== r2,
     });
-
-    this.state = {
-      disp: {},
-      username: '',
-      tree: {}
-    };
-  }
-
-  componentWillMount() {
-    var t = this;
-    fetch(URL + '/api/tree/info',
-      {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          id: this.props.id
-        })
-      }
-    )
-    .then(response => response.json())
-    .then((info) =>  {
-      let disp = 
-        {
-          title: 'Multiple photos',
-          description: 'with captions and no nav arrows',
-          displayNavArrows: false,
-          displayActionButton: true,
-          media: []
-        };
-      _.each(info.pictures, (pic) => {
-        disp.media.push({ photo: URL + '/uploads/' + pic.filename })
-      })
-      t.setState(
-      {
-        username: info.username,
-        disp,
-        tree: info.tree
-      });
-    });
-  }
-        
+  }      
 
   _onSelectionChanged(media, index, selected) {
     alert(`${media.photo} selection status: ${selected}`);
@@ -98,11 +55,11 @@ export default class PhotoBrowserModule extends Component {
 
   
   render() {
-    if (this.state.disp) {
+    if (this.props.disp) {
       return (
         <PhotoBrowser
           onBack={() => this.props.navigator.pop()}
-          mediaList={this.state.disp.media}
+          mediaList={this.props.disp.media}
           initialIndex={0}
           displayNavArrows={false}
           displaySelectionButtons={false}
@@ -119,28 +76,4 @@ export default class PhotoBrowserModule extends Component {
       <Text>Hey</Text>
       );
   }
-
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  list: {
-    flex: 1,
-    paddingTop: 54,
-    paddingLeft: 16,
-  },
-  row: {
-    flex: 1,
-    padding: 8,
-    borderBottomColor: 'rgba(0, 0, 0, 0.1)',
-    borderBottomWidth: 1,
-  },
-  rowTitle: {
-    fontSize: 14,
-  },
-  rowDescription: {
-    fontSize: 12,
-  },
-});
