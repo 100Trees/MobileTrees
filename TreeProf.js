@@ -37,7 +37,6 @@ export default class TreeProf extends Component {
             latitudeDelta: LATITUDE_DELTA,
             longitudeDelta: LONGITUDE_DELTA,
           },
-          markers: [],
         };
     }
 
@@ -74,7 +73,23 @@ export default class TreeProf extends Component {
       {
         username: info.username,
         disp,
-        tree: info.tree
+        tree: info.tree,
+        region: {            
+          latitude: parseFloat(info.latitude),
+          longitude: parseFloat(info.longitude),
+          latitudeDelta: LATITUDE_DELTA,
+          longitudeDelta: LONGITUDE_DELTA
+        },
+        marker: {
+          coordinate: {
+            latitude: parseFloat(info.tree.latitude),
+            longitude: parseFloat(info.tree.longitude)
+          },
+          key: info.tree.id,
+          color: '#00FF00'
+        }
+      }, () => {
+        t.map.animateToRegion(t.state.region);
       });
     });
   }
@@ -95,7 +110,8 @@ export default class TreeProf extends Component {
 
   render() {
     const status = this.state.tree && this.state.tree.is_healthy ? <Text style={ styles.savedText }>SAVED</Text> :  <Text style={ styles.infectedText }>INFECTED</Text> ;
-  
+
+      
     return (
       <View
         style={styles.container}
@@ -111,24 +127,27 @@ export default class TreeProf extends Component {
           {status}
           </View>
           <View style={styles.cityTextContainer}>
-            <Text style={styles.cityText}>{ this.state.tree ? 'YOOfdsafdasfasdfO' : 'CITY, STATE' }</Text>
+            <Text style={styles.cityText}>{ this.state.tree ? this.state.tree.city : 'CITY, STATE' }</Text>
           </View>
         </View>
         <View style={styles.row2}>
           <Text style={styles.descriptionText}>{ this.state.tree ? this.state.tree.description : 'DESCRIPTION' }</Text>
         </View>
-        <MapView
-          provider={this.props.provider}
-          ref={ref => { this.map = ref; }}
-          mapType={"standard"}
-          style={styles.map}
-          initialRegion={this.state.region}
-          onRegionChange={region => this.onRegionChange(region)}
-        >
-          
-        </MapView>
+        <View style={styles.mapContainer}>
+          <MapView
+            provider={this.props.provider}
+            ref={ref => { this.map = ref; }}
+            mapType={"standard"}
+            style={styles.map}
+            initialRegion={this.state.region}
+            onRegionChange={region => this.onRegionChange(region)}
+          >
+            {this.state.marker && <MapView.Marker key={this.state.marker.key} coordinate={this.state.marker.coordinate} pinColor={this.state.marker.color} /> }
+          </MapView>
+        </View>
       </View>
     );
+    
   }
 }
 
@@ -138,25 +157,24 @@ TreeProf.propTypes = {
 
 const styles = StyleSheet.create({
   container: {
-    margin: spacer
+    flex: 1,
+    flexDirection: 'column'
   },
   imageContainer: {
     justifyContent: 'center',
     alignItems: 'center',
   },
   img: {
-    width: width * 0.9, 
-    height: width * 0.9,
+    width: width , 
+    height: width ,
     borderWidth: 3, 
     borderColor: '#979797'
   },
   row1: {
-    marginTop: spacer,
-    marginBottom: spacer,
+    margin: spacer,
     flexDirection: 'row',
   },
   statusContainer: {
-    flex: 1
   },
   infectedText: {
     color: '#D0011B',
@@ -175,14 +193,21 @@ const styles = StyleSheet.create({
     fontSize: 16
   },
   row2: {
-    marginBottom: spacer
+    marginBottom: spacer,
+    marginLeft: spacer
   },
   descriptionText: {
     color: '#4A4A4A',
     fontSize: 16
   },
+  mapContainer: {
+    flex: 2,
+    flexDirection: 'row',
+    alignItems: 'stretch',
+  },
   map: {
-    height: width * 0.9,
-    width: width * 0.9
+    width: width,
+    height: 41,
+    alignItems: 'stretch'
   },
 });
