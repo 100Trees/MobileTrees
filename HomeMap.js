@@ -10,7 +10,7 @@ import {
   Navigator
 } from 'react-native';
 
-import MapView from 'react-native-maps';
+import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
 var _ = require('lodash');
 
 const { width, height } = Dimensions.get('window');
@@ -20,7 +20,7 @@ const LATITUDE = 37.7749;
 const LONGITUDE = -122.4914;
 const LATITUDE_DELTA = 0.0922;
 const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
-const URL = Platform.OS === 'ios' ? 'http://localhost:3000/api' : 'http://10.0.3.2:3000/api';
+const URL = Platform.OS === 'ios' ? 'http://localhost:3000/api' : 'http://10.0.2.2:3000/api';
 let id = 0;
 
 class HomeMap extends React.Component {
@@ -37,59 +37,59 @@ class HomeMap extends React.Component {
     };
   }
 
-  
+
   componentWillMount () {
     var t = this;
-    fetch(URL + '/me')
-    .then((response) => response.json())
-    .then((user) => {
-      t.setState({ region: 
-        {
-          latitude: user.latitude ? parseFloat(user.latitude) : LATITUDE,
-          longitude: user.longitude ? parseFloat(user.longitude) : LONGITUDE,
-          latitudeDelta: LATITUDE_DELTA,
-          longitudeDelta: LONGITUDE_DELTA,
-        }  
-      }, () => {
-        t.map.animateToRegion(t.state.region);
-        fetch(URL + '/trees',
-        {
-          method: 'POST',
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            isHealthy: false,
-            latitude: t.state.region.latitude,
-            longitude: t.state.region.longitude
-          })
-        })
-        .then((response) => {
-          return response.json();
-        })
-        .then((trees) => {
-          trees = _.map(trees, (tree) => {
-            //console.log(tree)
-            return {
-              coordinate: {
-                latitude: parseFloat(tree.latitude),
-                longitude: parseFloat(tree.longitude)
-              },
-              key: tree.id,
-              color: '#00FF00'
-            };
-          });
-          t.setState({ markers: trees });
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-      });
-    })
-    .catch((error) => {
-      console.error(error);
-    });
+    // fetch(URL + '/me')
+    // .then((response) => response.json())
+    // .then((user) => {
+    //   t.setState({ region:
+    //     {
+    //       latitude: user.latitude ? parseFloat(user.latitude) : LATITUDE,
+    //       longitude: user.longitude ? parseFloat(user.longitude) : LONGITUDE,
+    //       latitudeDelta: LATITUDE_DELTA,
+    //       longitudeDelta: LONGITUDE_DELTA,
+    //     }
+    //   }, () => {
+    //     t.map.animateToRegion(t.state.region);
+    //     fetch(URL + '/trees',
+    //     {
+    //       method: 'POST',
+    //       headers: {
+    //         'Accept': 'application/json',
+    //         'Content-Type': 'application/json',
+    //       },
+    //       body: JSON.stringify({
+    //         isHealthy: false,
+    //         latitude: t.state.region.latitude,
+    //         longitude: t.state.region.longitude
+    //       })
+    //     })
+    //     .then((response) => {
+    //       return response.json();
+    //     })
+    //     .then((trees) => {
+    //       trees = _.map(trees, (tree) => {
+    //         //console.log(tree)
+    //         return {
+    //           coordinate: {
+    //             latitude: parseFloat(tree.latitude),
+    //             longitude: parseFloat(tree.longitude)
+    //           },
+    //           key: tree.id,
+    //           color: '#00FF00'
+    //         };
+    //       });
+    //       t.setState({ markers: trees });
+    //     })
+    //     .catch((error) => {
+    //       console.error(error);
+    //     });
+    //   });
+    // })
+    // .catch((error) => {
+    //   console.error(error);
+    // });
   }
 
   onRegionChange(region) {
@@ -105,6 +105,8 @@ class HomeMap extends React.Component {
     return {
       latitude: region.latitude + ((Math.random() - 0.5) * (region.latitudeDelta / 2)),
       longitude: region.longitude + ((Math.random() - 0.5) * (region.longitudeDelta / 2)),
+      latitudeDelta: LATITUDE_DELTA,
+      longitudeDelta: LONGITUDE_DELTA
     };
   }
 
@@ -119,7 +121,7 @@ class HomeMap extends React.Component {
     return (
       <View style={styles.container}>
         <MapView
-          provider={this.props.provider}
+          provider={PROVIDER_GOOGLE}
           ref={ref => { this.map = ref; }}
           mapType={"standard"}
           style={styles.map}
